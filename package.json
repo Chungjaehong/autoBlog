@@ -1,0 +1,17 @@
+{
+  "name": "autobidding",
+  "version": "1.0.0",
+  "description": "A minimal Electron application",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build ": "electron-packager . autobidding --ignore='node_modules' --platform=win32 --arch=x64",
+    "package": "asar pack ./autobidding-win32-x64/resources/app/ ./autobidding-win32-x64/resources/app.asar &&rd ./autobidding-win32-x64/resources/app /S /Q"
+  },
+  "dependencies": {
+    "electron": "^1.4.12",
+    "electron-packager": "^8.3.0",
+    "electron-prebuilt": "^1.4.10",
+    "fs": "0.0.1-security"
+  }
+}

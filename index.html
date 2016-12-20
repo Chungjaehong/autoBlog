@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Hello World!</title>
+		<script>window.$ = window.jQuery = require('./js/jquery-3.1.0.js');</script>
+  </head>
+  <style type="css/text">
+
+  </style>
+  <body style="back">
+	  	<input type="button" id="btnTestAjax" value="업데이트" class="AXButton Blue">
+		<div id="test">
+
+		</div>
+  </body>
+
+<script>
+
+	
+
+	$("#btnTestAjax").click(function(){
+		Spider = require('node-spider');
+
+		spider = new Spider({
+			// How many requests can be run in parallel 
+			concurrent: 1,
+			// How long to wait after each request 
+			delay: 0,
+			// A stream to where internal logs are sent, optional 
+			logs: process.stderr,
+			// Re-visit visited URLs, false by default 
+			allowDuplicates: false,
+			// If `true` all queued handlers will be try-catch'd, errors go to `error` callback 
+			catchErrors: true,
+			// If `true` the spider will set the Referer header automatically on subsequent requests 
+			addReferrer: false,
+			// If `true` adds the X-Requested-With:XMLHttpRequest header 
+			xhr: false,
+			// If `true` adds the Connection:keep-alive header and forever option on request module 
+			keepAlive: false,
+			// Called when there's an error, throw will be used if none is provided 
+			error: function(err, url) {
+			},
+			// Called when there are no more requests 
+			done: function() {
+			},
+		
+			//- All options are passed to `request` module, for example: 
+			headers: { 'user-agent': 'Mozilla/5.0(compatible; Googlebot/2.1; +http://www.google.com/bot.html)' },
+			encoding: 'utf8'
+		});
+		
+		handleRequest = function(doc) {
+			var result=doc.$('div.view-content').html();
+			
+			$("#test").append(result);
+		};
+
+		// start crawling 
+		spider.queue('http://onenable.net/bbs/board.php?bo_table=toonia19&wr_id=1&page=10', handleRequest);
+
+	});
+</script>
+
+<script>
+	require('./renderer.js')
+</script>
+
+
+</html>
