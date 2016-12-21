@@ -9,6 +9,8 @@
 
   </style>
   <body style="back">
+	  	url : <input type="text" id = "txtUrl">
+		
 	  	<input type="button" id="btnTestAjax" value="업데이트" class="AXButton Blue">
 		<div id="test">
 
@@ -16,51 +18,83 @@
   </body>
 
 <script>
-
+	testAr = new Array();
 	
+	String.prototype.trim = function() {
+	    return this.replace(/(^\s*)|(\s*$)/gi, "");
+	}
 
-	$("#btnTestAjax").click(function(){
-		Spider = require('node-spider');
+	Spider = require('node-spider');
 
 		spider = new Spider({
-			// How many requests can be run in parallel 
 			concurrent: 1,
-			// How long to wait after each request 
 			delay: 0,
-			// A stream to where internal logs are sent, optional 
 			logs: process.stderr,
-			// Re-visit visited URLs, false by default 
 			allowDuplicates: false,
-			// If `true` all queued handlers will be try-catch'd, errors go to `error` callback 
 			catchErrors: true,
-			// If `true` the spider will set the Referer header automatically on subsequent requests 
 			addReferrer: false,
-			// If `true` adds the X-Requested-With:XMLHttpRequest header 
 			xhr: false,
-			// If `true` adds the Connection:keep-alive header and forever option on request module 
 			keepAlive: false,
-			// Called when there's an error, throw will be used if none is provided 
 			error: function(err, url) {
+				console.log(err);
 			},
-			// Called when there are no more requests 
 			done: function() {
 			},
-		
-			//- All options are passed to `request` module, for example: 
 			headers: { 'user-agent': 'Mozilla/5.0(compatible; Googlebot/2.1; +http://www.google.com/bot.html)' },
 			encoding: 'utf8'
 		});
 		
-		handleRequest = function(doc) {
-			var result=doc.$('div.view-content').html();
+		titleGetCallback = function(doc) {
 			
-			$("#test").append(result);
+			doc.$('td.list-subject a').each(function(i, elem) {
+				var href = doc.$(elem).attr('href').split('#')[0];
+		
+				var title = doc.$(elem).text().split("댓")[0].trim();//타이틀
+				var url = doc.resolve(href);//url
+
+				rstObject = new Object(); 
+				
+				rstObject.title = title;
+				rstObject.url = url;
+
+				testAr.push(rstObject);
+    		});
+			contentGet();
 		};
 
-		// start crawling 
-		spider.queue('http://onenable.net/bbs/board.php?bo_table=toonia19&wr_id=1&page=10', handleRequest);
+		contentGet = function(){
+			for(var i =0; i<testAr.length ; i++){
+				spider.queue(testAr[i].url, contentGetCallback);
+				//console.log(testAr[i].url);
+			}
+		};
 
-	});
+		contentFlag = 0;
+		
+		contentGetCallback = function(doc){
+			var result=doc.$('div.view-content').html();
+			testAr[contentFlag].contents = result; 
+			contentFlag++;
+		};
+
+		pageGetCallback =function(doc){
+			var result= doc.$('div.list-page.text-center ul li a');
+			pageLength=result[ result.length - 1 ].attribs.href.split("page=")[1];
+	
+			for(var i =1; i <= pageLength ; i++){
+				spider.queue(mainUrl + "&page=" + i, titleGetCallback);
+			}
+
+		};
+
+		$("#btnTestAjax").click(function(){
+			mainUrl = $("#txtUrl").val();
+				//url = "http://onenable.net/bbs/board.php?bo_table=toonia19";
+				//spider.queue(url, titleGetCallback);
+			spider.queue(mainUrl, pageGetCallback);
+			
+			testAr = new Array();
+		});
 </script>
 
 <script>
