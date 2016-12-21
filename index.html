@@ -72,8 +72,17 @@
 		contentFlag = 0;
 		
 		contentGetCallback = function(doc){
-			var result=doc.$('div.view-content').html();
-			testAr[contentFlag].contents = result; 
+			//var result=doc.$('div.view-content').html();
+			var result = doc.$('div.view-content a img');
+			//doc.$('div.view-content a img')[0].attribs.src
+			
+			for(var i =0; i< result.length ; i++){
+				rstObject = new Object();
+				rstObject.img = new Array();
+				rstObject.img.push(result[i].attribs.src.replace("thumb-","").replace("_600x864","");
+			}
+
+			testAr[contentFlag].img = rstObject.img; 
 			contentFlag++;
 		};
 
