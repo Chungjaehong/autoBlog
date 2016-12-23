@@ -12,7 +12,8 @@
 	  	url : <input type="text" id = "txtUrl">
 		
 	  	<input type="button" id="btnTestAjax" value="업데이트" class="AXButton Blue">
-		<div id="test">
+		<input type="button" id="btnTestAjax2" value="다운" class="AXButton Blue">
+		<font size="5" id="imgCont"></font> / <font size="5" id="contentsCont"></font> <font size="5" id="finishCnt"></font> 
 
 		</div>
   </body>
@@ -62,27 +63,41 @@
 			contentGet();
 		};
 
+		contentForFlag =0;
 		contentGet = function(){
-			for(var i =0; i<testAr.length ; i++){
+			for(var i = contentForFlag; i<testAr.length ; i++){
 				spider.queue(testAr[i].url, contentGetCallback);
 				//console.log(testAr[i].url);
 			}
+			contentForFlag = testAr.length;
+
+			$("#contentsCont").text(testAr.length);
 		};
 
 		contentFlag = 0;
 		
 		contentGetCallback = function(doc){
 			//var result=doc.$('div.view-content').html();
-			var result = doc.$('div.view-content a img');
+			//var result = doc.$('div.view-content a img');//이미지 경로
+
+			var result = doc.$('div.view-content a a'); //a 태그 경로
+
 			//doc.$('div.view-content a img')[0].attribs.src
 			
+			rstObject = new Object();
+			rstObject.iframe = new Array();
+
 			for(var i =0; i< result.length ; i++){
-				rstObject = new Object();
-				rstObject.img = new Array();
-				rstObject.img.push(result[i].attribs.src.replace("thumb-","").replace("_600x864","");
+				rstObject.iframe.push( result[i].attribs.href );
 			}
 
-			testAr[contentFlag].img = rstObject.img; 
+			testAr[contentFlag].iframe = rstObject.iframe; 
+			$("#imgCont").text(contentFlag);
+			if(contentFlag == testAr.length){
+				$("#finishCnt").text("완료");
+			}else{
+				$("#finishCnt").text("진행중");
+			}
 			contentFlag++;
 		};
 
@@ -103,7 +118,9 @@
 			spider.queue(mainUrl, pageGetCallback);
 			
 			testAr = new Array();
+			contentForFlag =0;
 		});
+
 </script>
 
 <script>

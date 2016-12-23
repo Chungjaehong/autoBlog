@@ -12,6 +12,7 @@
     "electron": "^1.4.12",
     "electron-packager": "^8.3.0",
     "electron-prebuilt": "^1.4.10",
-    "fs": "0.0.1-security"
+    "fs": "0.0.1-security",
+    "node-spider": "^1.4.1"
   }
 }
